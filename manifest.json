@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "No CC: Auto Disable YouTube™ Captions & Subtitles",
+    "name": "No CC: Hide YouTube™ Captions & Subtitles",
     "short_name": "No CC",
     "description": "Automatically turns off YouTube captions and subtitles. Lightweight extension to permanently hide CC and disable subtitles.",
     "version": "1.2.0",
@@ -32,7 +32,13 @@
     ],
     "browser_specific_settings": {
         "gecko": {
-            "id": "nocc@extension.dev"
+            "id": "nocc@akshit.dev",
+            "strict_min_version": "142.0",
+            "data_collection_permissions": {
+                "required": [
+                    "none"
+                ]
+            }
         }
     }
 }

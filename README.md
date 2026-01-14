@@ -1,4 +1,4 @@
-# No CC: Auto Disable YouTube™ Captions & Subtitles
+# No CC: Hide YouTube™ Captions & Subtitles
 
 **Automatically turns off YouTube captions and subtitles. Lightweight extension to permanently hide CC.**
 
