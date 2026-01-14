@@ -2,7 +2,7 @@
 
 **Automatically turns off YouTube captions and subtitles. Lightweight extension to permanently hide CC.**
 
-[![Firefox Add-on](https://img.shields.io/badge/Firefox-Get_Add--on-FF7139?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/firefox/)
+[![Firefox Add-on](https://img.shields.io/badge/Firefox-Get_Add--on-FF7139?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/no-cc/)
 [![Chrome Web Store](https://img.shields.io/badge/Chrome-Get_Extension-4285F4?logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore)
 
 ---
