@@ -18,6 +18,14 @@
 
 ---
 
+## Demo
+
+| Before (Cluttered 🤮) | After (Clean ✨) |
+| :---: | :---: |
+| ![Before](assets/before.png) | ![After](assets/after.png) |
+
+---
+
 ## What It Does
 
 - Turn off YouTube captions automatically
