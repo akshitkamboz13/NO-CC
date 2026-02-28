@@ -2,8 +2,9 @@
 
 **Automatically turns off YouTube captions and subtitles. Lightweight extension to permanently hide CC.**
 
-[![Firefox Add-on](https://img.shields.io/badge/Firefox-Get_Add--on-FF7139?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/no-cc/)
-[![Chrome Web Store](https://img.shields.io/badge/Chrome-Get_Extension-4285F4?logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore)
+[![Firefox Add-on](https://img.shields.io/badge/Firefox-Get_Add--on-FF7139?logo=firefox-browser&logoColor=white)](https://www.si4k.online/projects/no-cc)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome-Get_Extension-4285F4?logo=google-chrome&logoColor=white)](https://www.si4k.online/projects/no-cc)
+[![Edge Add-on](https://img.shields.io/badge/Edge-Get_Extension-0078D7?logo=microsoft-edge&logoColor=white)](https://www.si4k.online/projects/no-cc)
 
 ---
 
@@ -13,7 +14,7 @@
 - **One-click toggle** — ON/OFF from popup
 - **Remembers your choice** — persists across tabs and sessions
 - **Works everywhere** — videos, shorts, reels, home page hover previews
-- **Zero performance hit** — MutationObserver, no polling loops
+- **Zero performance hit** — debounced MutationObserver, no polling loops
 - **100% Open Source** — audit the code yourself
 
 ---
@@ -39,27 +40,46 @@
 ## Install
 
 ### Chrome / Edge / Brave
-1. Download this repo as ZIP
+1. Download from the [project page](https://www.si4k.online/projects/no-cc)
 2. Go to `chrome://extensions`
 3. Enable **Developer mode**
-4. Click **Load unpacked** → select folder
+4. Click **Load unpacked** → select the `chrome/` or `edge/` folder
 
 ### Firefox
-1. Go to `about:debugging#/runtime/this-firefox`
-2. Click **Load Temporary Add-on**
-3. Select `manifest.json`
+1. Download from the [project page](https://www.si4k.online/projects/no-cc)
+2. Go to `about:debugging#/runtime/this-firefox`
+3. Click **Load Temporary Add-on**
+4. Select `firefox/manifest.json`
+
+---
+
+## Browser Folders
+
+```
+├── chrome/      # Chrome & Chromium (Manifest V3)
+├── edge/        # Microsoft Edge (Manifest V3)
+└── firefox/     # Firefox (Manifest V2 + Gecko)
+```
 
 ---
 
 ## Source
 
 ```
-├── manifest.json   # Extension config (V3)
-├── content.js      # Caption killer logic
-├── popup.html      # Toggle UI
+├── manifest.json   # Extension config
+├── content.js      # Caption killer logic (debounced + throttled)
+├── popup.html      # Toggle UI with links
 ├── popup.js        # Toggle handler + storage
 └── icon.svg        # Extension icon
 ```
+
+---
+
+## Privacy
+
+This extension collects **zero data**. No analytics, no tracking, no external requests.
+
+👉 [Privacy Policy](https://www.si4k.online/projects/no-cc/privacy)
 
 ---
 
@@ -69,6 +89,8 @@ MIT — do whatever you want.
 
 ---
 
-## Support
+## Links
 
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/akshitkamboz13)
+- 🏠 [Homepage](https://www.si4k.online/projects/no-cc)
+- 🔒 [Privacy Policy](https://www.si4k.online/projects/no-cc/privacy)
+- ☕ [Buy Me A Coffee](https://www.buymeacoffee.com/akshitkamboz13)
