@@ -10,9 +10,11 @@
 
 ## Features
 
-- **~4 KB total** — ultra lightweight
-- **One-click toggle** — ON/OFF from popup
-- **Remembers your choice** — persists across tabs and sessions
+- **~8 KB total** — ultra lightweight
+- **One-click toggle** — ON/OFF from popup or in-player button
+- **Replaces YouTube's CC button** — hides the default and puts our smart button in its place
+- **Remembers your choice forever** — persists across tabs, sessions, and page reloads (unlike YouTube's default CC)
+- **Direct caption control** — toggle OFF = captions turn on, toggle ON = captions turn off. One button, no confusion
 - **Works everywhere** — videos, shorts, reels, home page hover previews
 - **Zero performance hit** — debounced MutationObserver, no polling loops
 - **100% Open Source** — audit the code yourself
@@ -31,7 +33,7 @@
 
 - Turn off YouTube captions automatically
 - Remove subtitles from YouTube Shorts
-- Hide CC button permanently
+- **Replace** YouTube's CC button with a smarter **No CC** button that remembers your preference
 - Disable auto-generated captions
 - Stop YouTube subtitles from turning on
 
