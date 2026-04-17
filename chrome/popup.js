@@ -8,6 +8,8 @@ const rows = {
 	previews: document.getElementById('q-previews'),
 };
 
+const masterToggle = document.getElementById('master-toggle');
+
 let state = { ...DEFAULTS };
 
 const syncButtons = () => {
@@ -22,6 +24,13 @@ const syncVisibility = () => {
 	const rootOn = state.enabled;
 	const noccOn = state.noCcEnabled;
 	const showGC = rootOn && noccOn;
+
+    masterToggle.classList.toggle('off', !rootOn);
+    const card = document.querySelector('.settings-card');
+    if (card) {
+        card.style.opacity = rootOn ? '1' : '0';
+        card.style.pointerEvents = rootOn ? 'all' : 'none';
+    }
 
 	rows.nocc.classList.toggle('hide', !rootOn);
 	rows.longForm.classList.toggle('hide', !showGC);
@@ -49,6 +58,12 @@ document.querySelectorAll('.yn button').forEach(btn => {
 		syncUI();
 		broadcastState();
 	});
+});
+
+masterToggle.addEventListener('click', () => {
+	state.enabled = !state.enabled;
+	syncUI();
+	broadcastState();
 });
 
 // Show defaults immediately (all on)

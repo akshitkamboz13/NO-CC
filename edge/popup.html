@@ -55,7 +55,21 @@ body {
 	align-items: center;
 	gap: 12px;
 	margin-bottom: 16px;
-	padding: 0 4px;
+	padding: 4px;
+	border-radius: 12px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	user-select: none;
+}
+.header:hover {
+    background: var(--hover-bg);
+}
+.header.off .header-icon {
+    filter: grayscale(100%) opacity(0.6);
+    box-shadow: none;
+}
+.header.off .header-text {
+    opacity: 0.6;
 }
 .header-icon {
 	width: 32px;
@@ -66,6 +80,7 @@ body {
 	align-items: center;
 	justify-content: center;
 	box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+	transition: filter 0.2s, box-shadow 0.2s;
 }
 .header-icon svg {
 	width: 18px;
@@ -79,6 +94,7 @@ body {
 .header-text {
 	display: flex;
 	flex-direction: column;
+	transition: opacity 0.2s;
 }
 .title {
 	font-size: 16px;
@@ -100,6 +116,7 @@ body {
 	box-shadow: var(--card-shadow);
 	border: 1px solid var(--border);
 	overflow: hidden;
+    transition: opacity 0.2s ease;
 }
 
 /* Individual Rows */
@@ -127,20 +144,21 @@ body {
 }
 
 /* Indentation for children */
-.l2 { transform: translateX(0); }
-.l2 .row-label { padding-left: 12px; }
+.l1 { transform: translateX(0); }
 
-.l3 { transform: translateX(0); }
-.l3 .row-label { padding-left: 24px; color: var(--text-sub); }
-.l3 .row-label::before {
+.l2 { transform: translateX(0); }
+.l2 .row-label { padding-left: 24px; color: var(--text-sub); }
+.l2 .row-label::before {
 	content: "";
 	position: absolute;
-	left: 12px;
-	top: 50%;
-	width: 6px;
-	height: 1px;
-	background: var(--text-sub);
-	opacity: 0.3;
+	left: 8px;
+	top: -12px;
+	width: 10px;
+	height: 20px;
+	border-left: 1.5px solid var(--text-sub);
+	border-bottom: 1.5px solid var(--text-sub);
+	border-bottom-left-radius: 4px;
+	opacity: 0.35;
 }
 
 .row-label {
@@ -219,7 +237,7 @@ body {
 </head>
 <body>
 
-<div class="header">
+<div class="header" id="master-toggle" title="Click to completely enable/disable extension">
 	<div class="header-icon">
 		<!-- Minimalist closed-captions slash icon -->
 		<svg viewBox="0 0 24 24">
@@ -234,15 +252,7 @@ body {
 </div>
 
 <div class="settings-card">
-	<div class="row q l1" id="q-root">
-		<span class="row-label">Enable extension</span>
-		<div class="yn">
-			<button class="y" data-key="enabled" data-val="true">Yes</button>
-			<button class="n" data-key="enabled" data-val="false">No</button>
-		</div>
-	</div>
-	
-	<div class="row q l2" id="q-nocc">
+	<div class="row q l1" id="q-nocc">
 		<span class="row-label">Hide captions</span>
 		<div class="yn">
 			<button class="y" data-key="noCcEnabled" data-val="true">Yes</button>
@@ -250,7 +260,7 @@ body {
 		</div>
 	</div>
 	
-	<div class="row q l3" id="q-longform">
+	<div class="row q l2" id="q-longform">
 		<span class="row-label">Long-form</span>
 		<div class="yn">
 			<button class="y" data-key="longForm" data-val="true">Yes</button>
@@ -258,7 +268,7 @@ body {
 		</div>
 	</div>
 	
-	<div class="row q l3" id="q-shorts">
+	<div class="row q l2" id="q-shorts">
 		<span class="row-label">Shorts</span>
 		<div class="yn">
 			<button class="y" data-key="shorts" data-val="true">Yes</button>
@@ -266,7 +276,7 @@ body {
 		</div>
 	</div>
 	
-	<div class="row q l3" id="q-previews">
+	<div class="row q l2" id="q-previews">
 		<span class="row-label">Previews</span>
 		<div class="yn">
 			<button class="y" data-key="previews" data-val="true">Yes</button>
