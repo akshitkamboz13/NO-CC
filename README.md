@@ -2,22 +2,22 @@
 
 **Automatically turns off YouTube captions and subtitles. Lightweight extension to permanently hide CC.**
 
-[![Firefox Add-on](https://img.shields.io/badge/Firefox-Get_Add--on-FF7139?logo=firefox-browser&logoColor=white)](https://www.si4k.online/projects/no-cc)
+[![Firefox Add-on](https://img.shields.io/badge/Firefox-Get_Add--on-FF7139?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/no-cc/)
 [![Chrome Web Store](https://img.shields.io/badge/Chrome-Get_Extension-4285F4?logo=google-chrome&logoColor=white)](https://www.si4k.online/projects/no-cc)
-[![Edge Add-on](https://img.shields.io/badge/Edge-Get_Extension-0078D7?logo=microsoft-edge&logoColor=white)](https://www.si4k.online/projects/no-cc)
+[![Edge Add-on](https://img.shields.io/badge/Edge-Get_Extension-0078D7?logo=microsoft-edge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/no-cc-hide-youtube%E2%84%A2-capt/mepafpplfgjffahdcmmilgnfbpfpfmbn)
 
 ---
 
 ## Features
 
-- **~8 KB total** — ultra lightweight
-- **One-click toggle** — ON/OFF from popup or in-player button
-- **Replaces YouTube's CC button** — hides the default and puts our smart button in its place
-- **Remembers your choice forever** — persists across tabs, sessions, and page reloads (unlike YouTube's default CC)
-- **Direct caption control** — toggle OFF = captions turn on, toggle ON = captions turn off. One button, no confusion
-- **Works everywhere** — videos, shorts, reels, home page hover previews
-- **Zero performance hit** — debounced MutationObserver, no polling loops
-- **100% Open Source** — audit the code yourself
+- **~8 KB total**   ultra lightweight
+- **One-click toggle**   ON/OFF from popup or in-player button
+- **Replaces YouTube's CC button**   hides the default and puts our smart button in its place
+- **Remembers your choice forever**   persists across tabs, sessions, and page reloads (unlike YouTube's default CC)
+- **Direct caption control**   toggle OFF = captions turn on, toggle ON = captions turn off. One button, no confusion
+- **Works everywhere**   videos, shorts, reels, home page hover previews
+- **Zero performance hit**   debounced MutationObserver, no polling loops
+- **100% Open Source**   audit the code yourself
 
 ---
 
@@ -81,18 +81,18 @@
 
 This extension collects **zero data**. No analytics, no tracking, no external requests.
 
-👉 [Privacy Policy](https://www.si4k.online/projects/no-cc/privacy)
+[Privacy Policy](https://www.si4k.online/projects/no-cc/privacy)
 
 ---
 
 ## License
 
-MIT — do whatever you want.
+MIT   do whatever you want.
 
 ---
 
 ## Links
 
-- 🏠 [Homepage](https://www.si4k.online/projects/no-cc)
-- 🔒 [Privacy Policy](https://www.si4k.online/projects/no-cc/privacy)
+- [Homepage](https://www.si4k.online/projects/no-cc)
+- [Privacy Policy](https://www.si4k.online/projects/no-cc/privacy)
 - ☕ [Buy Me A Coffee](https://www.buymeacoffee.com/akshitkamboz13)
