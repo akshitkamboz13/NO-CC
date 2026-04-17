@@ -8,9 +8,27 @@ const rows = {
 	previews: document.getElementById('q-previews'),
 };
 
-const masterToggle = document.getElementById('master-toggle');
+const rootRow = document.getElementById('q-root');
+const revealLinkContainer = document.getElementById('reveal-root-container');
+const revealBtn = document.getElementById('reveal-root-btn');
 
 let state = { ...DEFAULTS };
+let isRootPersistentlyRevealed = false;
+
+// 20s memory: Save timestamp on close if root was revealed this session
+window.addEventListener('unload', () => {
+	if (isRootPersistentlyRevealed || !state.enabled) {
+		chrome.storage.local.set({ popupClosedAt: Date.now() });
+	} else {
+		chrome.storage.local.remove('popupClosedAt');
+	}
+});
+
+revealBtn.addEventListener('click', (e) => {
+	e.preventDefault();
+	isRootPersistentlyRevealed = true;
+	syncVisibility();
+});
 
 const syncButtons = () => {
 	document.querySelectorAll('.yn button').forEach(btn => {
@@ -25,12 +43,10 @@ const syncVisibility = () => {
 	const noccOn = state.noCcEnabled;
 	const showGC = rootOn && noccOn;
 
-    masterToggle.classList.toggle('off', !rootOn);
-    const card = document.querySelector('.settings-card');
-    if (card) {
-        card.style.opacity = rootOn ? '1' : '0';
-        card.style.pointerEvents = rootOn ? 'all' : 'none';
-    }
+	const showRoot = !rootOn || isRootPersistentlyRevealed;
+
+	rootRow.classList.toggle('hide', !showRoot);
+	revealLinkContainer.classList.toggle('hide', showRoot);
 
 	rows.nocc.classList.toggle('hide', !rootOn);
 	rows.longForm.classList.toggle('hide', !showGC);
@@ -60,16 +76,15 @@ document.querySelectorAll('.yn button').forEach(btn => {
 	});
 });
 
-masterToggle.addEventListener('click', () => {
-	state.enabled = !state.enabled;
-	syncUI();
-	broadcastState();
-});
-
 // Show defaults immediately (all on)
 syncUI();
 
-chrome.storage.local.get(STORAGE_KEYS, (data) => {
+chrome.storage.local.get([...STORAGE_KEYS, 'popupClosedAt'], (data) => {
 	for (const key of STORAGE_KEYS) state[key] = data[key] ?? DEFAULTS[key];
+	
+	if (data.popupClosedAt && Date.now() - data.popupClosedAt < 20000) {
+		isRootPersistentlyRevealed = true;
+	}
+	
 	syncUI();
 });
