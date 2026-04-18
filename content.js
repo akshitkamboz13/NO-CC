@@ -39,6 +39,10 @@ const buildIconChildren = (showSlash) => {
 };
 
 const setIconState = (svg, isEnabled) => {
+  const targetState = isEnabled ? 'true' : 'false';
+  if (svg.dataset.currentState === targetState) return;
+  svg.dataset.currentState = targetState;
+  
   while (svg.firstChild) svg.removeChild(svg.firstChild);
   buildIconChildren(isEnabled).forEach(child => svg.appendChild(child));
 };
@@ -393,18 +397,19 @@ const ensureNoCcButtons = () => {
   ccButtons.forEach((ccButton) => {
     if (isMainVideoPlayer(ccButton)) {
       if (!settings.enabled) {
-        // If extension is globally off, restore native CC button and kill our custom one
-        // ONLY strip the display property if WE set it (using !important) to avoid fighting YouTube fading controls
-        if (ccButton.style.getPropertyPriority('display') === 'important') {
+        // If extension is globally off, restore native CC unconditionally exactly ONCE
+        queryAllDeep(BTN_SELECTOR).forEach(btn => btn.remove());
+        if (ccButton.dataset.noccHidden === 'true') {
           ccButton.style.removeProperty('display');
-        }
-        if (ccButton.nextElementSibling?.dataset?.noCcButton === 'true') {
-          ccButton.nextElementSibling.remove();
+          delete ccButton.dataset.noccHidden;
         }
       } else {
-        // Extension is active: inject our button and hide original
+        // Extension is active: inject our button and assert dominance over original
         createNoCcButton(ccButton);
-        ccButton.style.setProperty('display', 'none', 'important');
+        if (ccButton.style.getPropertyValue('display') !== 'none') {
+          ccButton.style.setProperty('display', 'none', 'important');
+          ccButton.dataset.noccHidden = 'true';
+        }
       }
     }
   });
