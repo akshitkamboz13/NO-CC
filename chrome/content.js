@@ -1,85 +1,92 @@
+// Prevent double-injection from popup's executeScript fallback
+if (window.__noCcLoaded) { /* already running */ } else {
+window.__noCcLoaded = true;
+
 let settings = { enabled: true, noCcEnabled: true, longForm: true, shorts: true, previews: true };
 
 const CC_SELECTOR = '.ytp-subtitles-button';
 const SOFT_PROMPT_ID = 'no-cc-soft-prompt';
 const SOFT_PROMPT_STYLE_ID = 'no-cc-soft-prompt-style';
+const STYLE_ID = 'no-cc-global-style';
 
 const isEffectivelyEnabled = () => settings.enabled && settings.noCcEnabled;
 
+// Properly URL-encoded SVG for the CC-with-slash icon
+const NOCC_SVG_URI = "data:image/svg+xml,%3Csvg viewBox='0 0 36 36' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11,11 C9.9,11 9,11.9 9,13 L9,23 C9,24.1 9.9,25 11,25 L25,25 C26.1,25 27,24.1 27,23 L27,13 C27,11.9 26.1,11 25,11 L11,11 Z M17,17 L15.5,17 L15.5,16.5 L13.5,16.5 L13.5,19.5 L15.5,19.5 L15.5,19 L17,19 L17,20 L13,20 C12.4,20 12,19.6 12,19 L12,17 C12,16.4 12.4,16 13,16 L17,16 L17,17 Z M24,17 L22.5,17 L22.5,16.5 L20.5,16.5 L20.5,19.5 L22.5,19.5 L22.5,19 L24,19 L24,20 L20,20 C19.4,20 19,19.6 19,19 L19,17 C19,16.4 19.4,16 20,16 L24,16 L24,17 Z' fill='white'/%3E%3Cpath d='M7.5 7.5 L28.5 28.5' stroke='white' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E";
+
 const buildGlobalCSS = () => {
-  if (document.getElementById('no-cc-global-style')) return;
+  if (document.getElementById(STYLE_ID)) return;
   const style = document.createElement('style');
-  style.id = 'no-cc-global-style';
+  style.id = STYLE_ID;
   style.textContent = `
-    /* --- 1. VISUAL HIJACKING OF NATIVE CC BUTTON --- */
-    
-    /* When globally enabled but longForm is OFF: dim the button indicating it's bypassed */
+    /* When globally enabled but longForm is OFF: dim the button */
     body[data-nocc-ext="true"][data-nocc-longform="off"] .ytp-subtitles-button {
       opacity: 0.65;
     }
-    
-    /* When globally enabled and longForm is ON: replace icon with Active Slash */
+
+    /* When globally enabled and longForm is ON: replace icon with slash */
     body[data-nocc-ext="true"][data-nocc-longform="on"] .ytp-subtitles-button {
       position: relative !important;
     }
     body[data-nocc-ext="true"][data-nocc-longform="on"] .ytp-subtitles-button svg {
-      display: none !important;
+      visibility: hidden !important;
     }
     body[data-nocc-ext="true"][data-nocc-longform="on"] .ytp-subtitles-button::after {
       content: "";
       position: absolute; top: 0; left: 0; right: 0; bottom: 0;
       pointer-events: none;
-      background: center / contain no-repeat url('data:image/svg+xml;utf8,<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg"><path d="M11,11 C9.9,11 9,11.9 9,13 L9,23 C9,24.1 9.9,25 11,25 L25,25 C26.1,25 27,24.1 27,23 L27,13 C27,11.9 26.1,11 25,11 L11,11 Z M17,17 L15.5,17 L15.5,16.5 L13.5,16.5 L13.5,19.5 L15.5,19.5 L15.5,19 L17,19 L17,20 L13,20 C12.4,20 12,19.6 12,19 L12,17 C12,16.4 12.4,16 13,16 L17,16 L17,17 Z M24,17 L22.5,17 L22.5,16.5 L20.5,16.5 L20.5,19.5 L22.5,19.5 L22.5,19 L24,19 L24,20 L20,20 C19.4,20 19,19.6 19,19 L19,17 C19,16.4 19.4,16 20,16 L24,16 L24,17 Z" fill="white"/><path d="M7.5 7.5 L28.5 28.5" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>');
+      background: center / 60% no-repeat url("${NOCC_SVG_URI}");
     }
 
-    /* Prevent visual hijack inside Shorts and Previews (which shouldn't have CC controls visually replaced) */
+    /* Exempt Shorts and Previews from visual hijack */
     body[data-nocc-ext="true"] ytd-shorts .ytp-subtitles-button::after,
+    body[data-nocc-ext="true"] ytd-reel-video-renderer .ytp-subtitles-button::after,
     body[data-nocc-ext="true"] ytd-video-preview .ytp-subtitles-button::after,
     body[data-nocc-ext="true"] #video-preview .ytp-subtitles-button::after {
-        display: none !important;
+      display: none !important;
     }
     body[data-nocc-ext="true"][data-nocc-longform="on"] ytd-shorts .ytp-subtitles-button svg,
+    body[data-nocc-ext="true"][data-nocc-longform="on"] ytd-reel-video-renderer .ytp-subtitles-button svg,
     body[data-nocc-ext="true"][data-nocc-longform="on"] ytd-video-preview .ytp-subtitles-button svg,
     body[data-nocc-ext="true"][data-nocc-longform="on"] #video-preview .ytp-subtitles-button svg {
-        display: block !important;
+      visibility: visible !important;
     }
 
-    /* --- 2. GLOBAL OMNIPRESENT CAPTION HIDING --- */
-
-    /* Generic Fallback (Main Video Player) */
+    /* Caption hiding — Main Video */
     body[data-nocc-ext="true"][data-nocc-longform="on"] .ytp-caption-window-container,
     body[data-nocc-ext="true"][data-nocc-longform="on"] .caption-window {
-        display: none !important;
+      display: none !important;
     }
 
-    /* Shorts Overrides */
+    /* Caption hiding — Shorts */
     body[data-nocc-ext="true"][data-nocc-shorts="on"] ytd-shorts .ytp-caption-window-container,
     body[data-nocc-ext="true"][data-nocc-shorts="on"] ytd-reel-video-renderer .ytp-caption-window-container {
-        display: none !important;
+      display: none !important;
     }
     body[data-nocc-ext="true"][data-nocc-shorts="off"] ytd-shorts .ytp-caption-window-container,
     body[data-nocc-ext="true"][data-nocc-shorts="off"] ytd-reel-video-renderer .ytp-caption-window-container {
-        display: block !important;
+      display: block !important;
     }
 
-    /* Previews Overrides */
+    /* Caption hiding — Previews */
     body[data-nocc-ext="true"][data-nocc-previews="on"] ytd-video-preview .ytp-caption-window-container,
     body[data-nocc-ext="true"][data-nocc-previews="on"] #inline-preview-player .ytp-caption-window-container {
-        display: none !important;
+      display: none !important;
     }
     body[data-nocc-ext="true"][data-nocc-previews="off"] ytd-video-preview .ytp-caption-window-container,
     body[data-nocc-ext="true"][data-nocc-previews="off"] #inline-preview-player .ytp-caption-window-container {
-        display: block !important;
+      display: block !important;
     }
   `;
   document.documentElement.appendChild(style);
 };
 
 const syncVariablesToCSS = () => {
-    document.body.dataset.noccExt = isEffectivelyEnabled() ? 'true' : 'false';
-    document.body.dataset.noccLongform = settings.longForm ? 'on' : 'off';
-    document.body.dataset.noccShorts = settings.shorts ? 'on' : 'off';
-    document.body.dataset.noccPreviews = settings.previews ? 'on' : 'off';
+  if (!document.body) return; // Safety: body may not exist yet
+  document.body.dataset.noccExt = isEffectivelyEnabled() ? 'true' : 'false';
+  document.body.dataset.noccLongform = settings.longForm ? 'on' : 'off';
+  document.body.dataset.noccShorts = settings.shorts ? 'on' : 'off';
+  document.body.dataset.noccPreviews = settings.previews ? 'on' : 'off';
 };
 
 const applySettings = (newSettings, { persist = true } = {}) => {
@@ -88,7 +95,7 @@ const applySettings = (newSettings, { persist = true } = {}) => {
   syncVariablesToCSS();
 };
 
-/* --- EVENT DELEGATION CAPTURE --- */
+/* --- CONTEXT DETECTION --- */
 
 const isInsideShorts = (el) => {
   if (window.location.pathname.startsWith('/shorts/')) return true;
@@ -104,26 +111,22 @@ const isMainVideoPlayer = (el) => {
   return !isInsideShorts(el) && !isInsidePreview(el);
 };
 
-// Listen in the CAPTURE phase to beat absolutely all of YouTube's native framework listeners.
+/* --- EVENT DELEGATION (Capture Phase) --- */
+
 document.addEventListener('click', (e) => {
   const ccBtn = e.target.closest(CC_SELECTOR);
-  
-  // Only hijack clicks if the user explicitly clicked the CC button on the MAIN player while our extension is guarding it.
   if (ccBtn && isEffectivelyEnabled() && isMainVideoPlayer(ccBtn)) {
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      e.preventDefault();
-      
-      // Instantly toggle our local Long Form guard state instead!
-      applySettings({ longForm: !settings.longForm });
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    applySettings({ longForm: !settings.longForm });
   }
 }, true);
 
-/* --- REMAINING BOILERPLATE: RATE PROMPT & INIT --- */
+/* --- SOFT RATE PROMPT --- */
 
 const ensureSoftPromptStyle = () => {
   if (document.getElementById(SOFT_PROMPT_STYLE_ID)) return;
-
   const style = document.createElement('style');
   style.id = SOFT_PROMPT_STYLE_ID;
   style.textContent = `
@@ -152,25 +155,20 @@ const ensureSoftPromptStyle = () => {
 const createSoftPromptIcon = () => {
   const iconWrap = document.createElement('span');
   iconWrap.className = 'no-cc-soft-icon';
-
   const svgNS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(svgNS, 'svg');
   svg.setAttribute('viewBox', '0 0 24 24');
   svg.setAttribute('aria-hidden', 'true');
-
   const shield = document.createElementNS(svgNS, 'path');
   shield.setAttribute('d', 'M12 3l7 3v6c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6l7-3z');
   const check = document.createElementNS(svgNS, 'path');
   check.setAttribute('d', 'M8.5 12.5l2.3 2.3 4.7-4.9');
-
   svg.append(shield, check);
   iconWrap.appendChild(svg);
   return iconWrap;
 };
 
-const removeSoftPrompt = () => {
-  document.getElementById(SOFT_PROMPT_ID)?.remove();
-};
+const removeSoftPrompt = () => document.getElementById(SOFT_PROMPT_ID)?.remove();
 
 const showSoftRatePrompt = ({ storeReviewUrl, contributionUrl }) => {
   if (document.getElementById(SOFT_PROMPT_ID)) return;
@@ -178,10 +176,8 @@ const showSoftRatePrompt = ({ storeReviewUrl, contributionUrl }) => {
 
   const card = document.createElement('div');
   card.id = SOFT_PROMPT_ID;
-
   const head = document.createElement('div');
   head.className = 'no-cc-soft-head';
-  
   const icon = createSoftPromptIcon();
   const titleBlock = document.createElement('div');
   const title = document.createElement('div');
@@ -201,10 +197,9 @@ const showSoftRatePrompt = ({ storeReviewUrl, contributionUrl }) => {
   actions.className = 'no-cc-soft-actions';
 
   const sendAction = (action) => {
-    chrome.runtime.sendMessage({ type: 'noCc:ratePromptAction', action }).catch(()=>{});
+    chrome.runtime.sendMessage({ type: 'noCc:ratePromptAction', action }).catch(() => {});
     removeSoftPrompt();
   };
-
   const createBtn = (text, action, isPrimary) => {
     const b = document.createElement('button');
     b.className = 'no-cc-soft-btn' + (isPrimary ? ' primary' : '');
@@ -212,37 +207,38 @@ const showSoftRatePrompt = ({ storeReviewUrl, contributionUrl }) => {
     b.addEventListener('click', () => sendAction(action));
     return b;
   };
-
   actions.append(
     createBtn('Rate in 10 seconds', 'rate-store', true),
     createBtn('Support project', 'contribute', false),
     createBtn('Remind later', 'remind-later', false),
     createBtn('No thanks', 'decline', false)
   );
-
   card.append(head, body, actions);
   document.documentElement.appendChild(card);
 };
 
-// Init
+/* --- INIT --- */
+
 buildGlobalCSS();
+
 chrome.storage.local.get(['enabled', 'noCcEnabled', 'longForm', 'shorts', 'previews'], (data) => {
   settings.enabled = data.enabled ?? true;
   settings.noCcEnabled = data.noCcEnabled ?? true;
   settings.longForm = data.longForm ?? true;
   settings.shorts = data.shorts ?? true;
   settings.previews = data.previews ?? true;
-  
   syncVariablesToCSS();
-  
+
   setTimeout(() => {
     chrome.runtime.sendMessage({ type: 'noCc:requestRatePromptIfDue' }, (response) => {
+      if (chrome.runtime.lastError) return;
       if (response?.showPrompt) showSoftRatePrompt(response);
     });
   }, 1200);
 });
 
-// Message Sync
+/* --- MESSAGE SYNC --- */
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg?.type === 'noCc:showSoftRatePrompt') {
     showSoftRatePrompt(msg); return;
@@ -255,3 +251,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
   if (typeof msg.enabled === 'boolean') applySettings({ enabled: msg.enabled });
 });
+
+} // end of double-injection guard
+
