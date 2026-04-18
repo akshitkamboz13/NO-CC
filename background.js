@@ -3,7 +3,7 @@ const UNINSTALL_URL = 'https://www.si4k.online/projects/no-cc?uninstall';
 const STORE_REVIEW_URL = 'https://chromewebstore.google.com/detail/no-cc-hide-youtube-captio/nghfjpepacogcjjjhdecphdaaaaljeel/reviews';
 const CONTRIBUTION_URL = 'https://www.si4k.online/contribution';
 const RATE_CHECK_ALARM = 'no-cc-rate-check';
-const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
+const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 const REMIND_LATER_MS = 3 * 24 * 60 * 60 * 1000;
 const RATE_PROMPT_DEFAULTS = {
     installedAt: null,
@@ -19,7 +19,7 @@ const shouldShowRatePrompt = (data) => {
 
     if (status !== 'pending') return false;
     if (!installedAt) return false;
-    if (now < installedAt + TEN_DAYS_MS) return false;
+    if (now < installedAt + THREE_DAYS_MS) return false;
     if (remindAt && now < remindAt) return false;
 
     return true;
