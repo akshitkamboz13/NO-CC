@@ -103,43 +103,41 @@ const isMainVideoPlayer = (el) => {
   return !isInsideShorts(el) && !isInsidePreview(el);
 };
 
-/* --- EVENT DELEGATION (Capture Phase) --- */
+/* --- INTERACTION TAILING (Perfect Native Sync) --- */
 
+// Instead of fighting YouTube's complex internal React click handlers, we let YouTube
+// natively process player clicks and keyboard hotkeys. Milliseconds later, we check 
+// the factual outcome of the button's `aria-pressed` state and synchronize our extension.
+
+const syncToNativeOutcome = (ccBtn) => {
+  if (!ccBtn || !isEffectivelyEnabled() || !isMainVideoPlayer(ccBtn)) return;
+  setTimeout(() => {
+    // What did YouTube natively decide after the interaction?
+    const isNowOn = ccBtn.getAttribute('aria-pressed') === 'true';
+    
+    // If native is ON, the user wants captions -> No CC bypass is engaged (longForm = false).
+    // If native is OFF, the user wants them hidden -> No CC is strictly applied (longForm = true).
+    const resultingState = !isNowOn;
+    
+    applySettings({ longForm: resultingState }, { persist: true });
+    chrome.runtime.sendMessage({ type: 'noCc:settingsUpdate', settings }).catch(() => {});
+  }, 100); // 100ms gives YouTube's Javascript pipeline plenty of time to resolve the UI state.
+};
+
+// Listen to standard clicks anywhere on the subtitles button
 document.addEventListener('click', (e) => {
   const ccBtn = e.target.closest(CC_SELECTOR);
-  if (ccBtn && isEffectivelyEnabled() && isMainVideoPlayer(ccBtn)) {
-    
-    const isNativeOn = ccBtn.getAttribute('aria-pressed') === 'true';
-    const willBeLongForm = !settings.longForm;
+  if (ccBtn) syncToNativeOutcome(ccBtn);
+});
 
-    // We must ensure the native YouTube CC state aligns with the user's intent.
-    // If No CC is actively hiding captions (longForm=true), and they click it, they want to SEE captions natively.
-    // If No CC is bypassed (longForm=false), and they click it, they want to HIDE captions natively (and re-engage No CC).
-    
-    if (settings.longForm === true) {
-      if (isNativeOn) {
-        // Native is already ON. If we let the click pass, YouTube turns it OFF natively.
-        // We want it to stay ON so captions appear when our CSS override lifts!
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        e.preventDefault();
-      }
-    } else {
-      if (!isNativeOn) {
-        // Native is currently OFF. If we let the click pass, YouTube turns it ON natively.
-        // We want it to stay OFF because No CC is re-engaging.
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        e.preventDefault();
-      }
-    }
-
-    applySettings({ longForm: willBeLongForm });
-    
-    // Ensure the popup UI visibly flips if it's currently open
-    chrome.runtime.sendMessage({ type: 'noCc:settingsUpdate', settings }).catch(() => {});
+// Listen to the 'C' standard YouTube hotkey
+document.addEventListener('keyup', (e) => {
+  // Ensure the user isn't typing in a search box or comment field
+  if (e.key.toLowerCase() === 'c' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+    const ccBtn = document.querySelector(CC_SELECTOR);
+    syncToNativeOutcome(ccBtn);
   }
-}, true);
+});
 
 /* --- SOFT RATE PROMPT --- */
 
