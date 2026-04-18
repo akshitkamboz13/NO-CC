@@ -20,12 +20,20 @@ const createSvgEl = (tag, attrs) => {
 
 const buildIconChildren = (showSlash) => {
   const children = [
-    createSvgEl('rect', { x: '4', y: '9', width: '28', height: '18', rx: '2', stroke: 'white', 'stroke-width': '2', fill: 'none' }),
-    createSvgEl('rect', { x: '8', y: '14', width: '20', height: '2.5', rx: '1', fill: 'white' }),
-    createSvgEl('rect', { x: '8', y: '19.5', width: '14', height: '2.5', rx: '1', fill: 'white' }),
+    // Beautiful exact match of the native YouTube CC solid pill icon
+    createSvgEl('path', { 
+      d: 'M11,11 C9.9,11 9,11.9 9,13 L9,23 C9,24.1 9.9,25 11,25 L25,25 C26.1,25 27,24.1 27,23 L27,13 C27,11.9 26.1,11 25,11 L11,11 Z M17,17 L15.5,17 L15.5,16.5 L13.5,16.5 L13.5,19.5 L15.5,19.5 L15.5,19 L17,19 L17,20 L13,20 C12.4,20 12,19.6 12,19 L12,17 C12,16.4 12.4,16 13,16 L17,16 L17,17 Z M24,17 L22.5,17 L22.5,16.5 L20.5,16.5 L20.5,19.5 L22.5,19.5 L22.5,19 L24,19 L24,20 L20,20 C19.4,20 19,19.6 19,19 L19,17 C19,16.4 19.4,16 20,16 L24,16 L24,17 Z', 
+      fill: 'white' 
+    })
   ];
   if (showSlash) {
-    children.push(createSvgEl('line', { x1: '5', y1: '31', x2: '31', y2: '5', stroke: 'white', 'stroke-width': '2.5', 'stroke-linecap': 'round' }));
+    // Elegant stark white slash mimicking Material icon "off" states
+    children.push(createSvgEl('path', { 
+      d: 'M 7.5 7.5 L 28.5 28.5', 
+      stroke: 'white', 
+      'stroke-width': '2.5', 
+      'stroke-linecap': 'round' 
+    }));
   }
   return children;
 };
@@ -386,7 +394,10 @@ const ensureNoCcButtons = () => {
     if (isMainVideoPlayer(ccButton)) {
       if (!settings.enabled) {
         // If extension is globally off, restore native CC button and kill our custom one
-        ccButton.style.removeProperty('display');
+        // ONLY strip the display property if WE set it (using !important) to avoid fighting YouTube fading controls
+        if (ccButton.style.getPropertyPriority('display') === 'important') {
+          ccButton.style.removeProperty('display');
+        }
         if (ccButton.nextElementSibling?.dataset?.noCcButton === 'true') {
           ccButton.nextElementSibling.remove();
         }
