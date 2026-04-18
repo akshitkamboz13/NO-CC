@@ -14,7 +14,15 @@
         "default_icon": "icon.svg"
     },
     "background": {
-        "service_worker": "background.js"
+        "scripts": [
+            "background.js"
+        ]
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "nocc@si4k.online",
+            "strict_min_version": "109.0"
+        }
     },
     "permissions": [
         "scripting",
