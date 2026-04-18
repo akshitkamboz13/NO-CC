@@ -135,7 +135,8 @@ const applySettings = (newSettings, { persist = true } = {}) => {
     allOffButtons.forEach(b => b.click());
   }
 
-  syncNoCcButtons();
+  // Force button injection/destruction checks instantly on config change
+  ensureNoCcButtons();
 };
 
 const ensureSoftPromptStyle = () => {
@@ -383,13 +384,23 @@ const ensureNoCcButtons = () => {
   const ccButtons = queryAllDeep(CC_SELECTOR);
   ccButtons.forEach((ccButton) => {
     if (isMainVideoPlayer(ccButton)) {
-      createNoCcButton(ccButton);
-      // Keep the default CC button hidden on main player only
-      ccButton.style.setProperty('display', 'none', 'important');
+      if (!settings.enabled) {
+        // If extension is globally off, restore native CC button and kill our custom one
+        ccButton.style.removeProperty('display');
+        if (ccButton.nextElementSibling?.dataset?.noCcButton === 'true') {
+          ccButton.nextElementSibling.remove();
+        }
+      } else {
+        // Extension is active: inject our button and hide original
+        createNoCcButton(ccButton);
+        ccButton.style.setProperty('display', 'none', 'important');
+      }
     }
-    // For previews & shorts: leave the default CC button alone visually
   });
-  syncNoCcButtons();
+  
+  if (settings.enabled) {
+    syncNoCcButtons();
+  }
 };
 
 // Schedule kill during idle time for smooth performance
