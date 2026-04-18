@@ -108,10 +108,36 @@ const isMainVideoPlayer = (el) => {
 document.addEventListener('click', (e) => {
   const ccBtn = e.target.closest(CC_SELECTOR);
   if (ccBtn && isEffectivelyEnabled() && isMainVideoPlayer(ccBtn)) {
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-    e.preventDefault();
-    applySettings({ longForm: !settings.longForm });
+    
+    const isNativeOn = ccBtn.getAttribute('aria-pressed') === 'true';
+    const willBeLongForm = !settings.longForm;
+
+    // We must ensure the native YouTube CC state aligns with the user's intent.
+    // If No CC is actively hiding captions (longForm=true), and they click it, they want to SEE captions natively.
+    // If No CC is bypassed (longForm=false), and they click it, they want to HIDE captions natively (and re-engage No CC).
+    
+    if (settings.longForm === true) {
+      if (isNativeOn) {
+        // Native is already ON. If we let the click pass, YouTube turns it OFF natively.
+        // We want it to stay ON so captions appear when our CSS override lifts!
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        e.preventDefault();
+      }
+    } else {
+      if (!isNativeOn) {
+        // Native is currently OFF. If we let the click pass, YouTube turns it ON natively.
+        // We want it to stay OFF because No CC is re-engaging.
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        e.preventDefault();
+      }
+    }
+
+    applySettings({ longForm: willBeLongForm });
+    
+    // Ensure the popup UI visibly flips if it's currently open
+    chrome.runtime.sendMessage({ type: 'noCc:settingsUpdate', settings }).catch(() => {});
   }
 }, true);
 
